@@ -3,6 +3,8 @@ defmodule Instream.Log.DefaultLogger do
   Default logger for all entries.
   """
 
+  require Logger
+
   alias Instream.Log.QueryEntry
   alias Instream.Log.WriteEntry
 
@@ -10,6 +12,19 @@ defmodule Instream.Log.DefaultLogger do
   Logs a request.
   """
   @spec log(QueryEntry.t | WriteEntry.t) :: QueryEntry.t | WriteEntry.t
-  def log(%QueryEntry{} = entry), do: entry
-  def log(%WriteEntry{} = entry), do: entry
+  def log(%QueryEntry{} = entry) do
+    Logger.debug fn ->
+      entry.query
+    end
+
+    entry
+  end
+
+  def log(%WriteEntry{} = entry) do
+    Logger.debug fn ->
+      "write #{ entry.points } points"
+    end
+
+    entry
+  end
 end
