@@ -13,9 +13,7 @@ defmodule Instream.Log.DefaultLogger do
   """
   @spec log(QueryEntry.t | WriteEntry.t) :: QueryEntry.t | WriteEntry.t
   def log(%QueryEntry{} = entry) do
-    Logger.debug fn ->
-      entry.query
-    end
+    Logger.debug(fn -> log_entry(entry) end)
 
     entry
   end
@@ -27,4 +25,13 @@ defmodule Instream.Log.DefaultLogger do
 
     entry
   end
+
+
+  # Query string construction methods
+
+  defp log_entry(%QueryEntry{ type: :ping, data: data }) do
+    [ "[ping ", data[:host], "] ", to_string(data[:result]) ]
+  end
+
+  defp log_entry(entry), do: entry.data[:query]
 end

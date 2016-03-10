@@ -8,7 +8,10 @@ defmodule Instream.Log.DefaultLoggerTest do
   alias Instream.Log.WriteEntry
 
   test "query log entry" do
-    entry = %QueryEntry{ query: "SELECT * FROM log_test" }
+    entry = %QueryEntry{
+      type: :read,
+      data: %{ query: "SELECT * FROM log_test" }
+    }
 
     log = capture_io :user, fn ->
       DefaultLogger.log(entry)
@@ -16,7 +19,7 @@ defmodule Instream.Log.DefaultLoggerTest do
       :timer.sleep(10)
     end
 
-    assert String.contains?(log, entry.query)
+    assert String.contains?(log, entry.data[:query])
   end
 
   test "write log entry" do

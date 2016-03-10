@@ -3,6 +3,7 @@ defmodule Instream.Connection.QueryRunner do
   Executes a query for a connection.
   """
 
+  alias Instream.Log.QueryEntry
   alias Instream.Query
   alias Instream.Query.Headers
   alias Instream.Query.URL
@@ -14,11 +15,21 @@ defmodule Instream.Connection.QueryRunner do
   @spec ping(Query.t, Keyword.t, Keyword.t) :: :pong | :error
   def ping(%Query{} = query, _opts, conn) do
     headers = conn |> Headers.assemble()
+    result  =
+      conn
+      |> URL.ping(query.opts[:host])
+      |> :hackney.head(headers)
+      |> Response.parse_ping()
 
-    conn
-    |> URL.ping(query.opts[:host])
-    |> :hackney.head(headers)
-    |> Response.parse_ping()
+    conn[:module].__log__(%QueryEntry{
+      type: :ping,
+      data: %{
+        host:   query.opts[:host] || hd(conn[:hosts]),
+        result: result
+      }
+    })
+
+    result
   end
 
   @doc """

@@ -4,10 +4,12 @@ defmodule Instream.Log.QueryEntry do
   """
 
   defstruct [
-    query: nil
+    type: nil,
+    data: %{}
   ]
 
   @type t :: %__MODULE__{
-    query: String.t
+    type: atom,
+    data: map
   }
 end
