@@ -33,5 +33,7 @@ defmodule Instream.Log.DefaultLogger do
     [ "[ping ", data[:host], "] ", to_string(data[:result]) ]
   end
 
-  defp log_entry(entry), do: entry.data[:query]
+  defp log_entry(%QueryEntry{ type: :read, data: data }) do
+    [ "[read] ", data[:query] ]
+  end
 end

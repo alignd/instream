@@ -18,4 +18,16 @@ defmodule Instream.Log.QueryEntryTest do
 
     assert String.contains?(log, hd(LogConnection.config[:hosts]))
   end
+
+  test "logging read request" do
+    query = "SELECT value FROM empty_measurement"
+    log   = capture_io :user, fn ->
+      _ = LogConnection.query(query)
+
+      :timer.sleep(10)
+    end
+
+    assert String.contains?(log, "read")
+    assert String.contains?(log, query)
+  end
 end

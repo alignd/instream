@@ -39,7 +39,7 @@ defmodule Instream.Connection.QueryRunner do
   def read(%Query{} = query, opts, conn) do
     headers = conn |> Headers.assemble()
     url     =
-         conn
+      conn
       |> URL.query()
       |> URL.append_database(opts[:database])
       |> URL.append_epoch(query.opts[:precision])
@@ -48,7 +48,16 @@ defmodule Instream.Connection.QueryRunner do
     { :ok, status, headers, client } = :hackney.get(url, headers)
     { :ok, response }                = :hackney.body(client)
 
-    { status, headers, response } |> Response.maybe_parse(opts)
+    result =
+      { status, headers, response }
+      |> Response.maybe_parse(opts)
+
+    conn[:module].__log__(%QueryEntry{
+      type: :read,
+      data: %{ query: query.payload }
+    })
+
+    result
   end
 
   @doc """
