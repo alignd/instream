@@ -13,7 +13,7 @@ defmodule Instream.Connection.QueryRunner do
   Executes `:ping` queries.
   """
   @spec ping(Query.t, Keyword.t, Keyword.t) :: :pong | :error
-  def ping(%Query{} = query, _opts, conn) do
+  def ping(%Query{} = query, opts, conn) do
     headers = conn |> Headers.assemble()
     result  =
       conn
@@ -21,13 +21,15 @@ defmodule Instream.Connection.QueryRunner do
       |> :hackney.head(headers)
       |> Response.parse_ping()
 
-    conn[:module].__log__(%QueryEntry{
-      type: :ping,
-      data: %{
-        host:   query.opts[:host] || hd(conn[:hosts]),
-        result: result
-      }
-    })
+    if false != opts[:log] do
+      conn[:module].__log__(%QueryEntry{
+        type: :ping,
+        data: %{
+          host:   query.opts[:host] || hd(conn[:hosts]),
+          result: result
+        }
+      })
+    end
 
     result
   end
@@ -52,10 +54,12 @@ defmodule Instream.Connection.QueryRunner do
       { status, headers, response }
       |> Response.maybe_parse(opts)
 
-    conn[:module].__log__(%QueryEntry{
-      type: :read,
-      data: %{ query: query.payload }
-    })
+    if false != opts[:log] do
+      conn[:module].__log__(%QueryEntry{
+        type: :read,
+        data: %{ query: query.payload }
+      })
+    end
 
     result
   end

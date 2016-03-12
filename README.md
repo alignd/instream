@@ -147,6 +147,15 @@ be inserted as the first argument of the method call.
 
 All logging modules have to return the entry after processing it.
 
+To prevent a query from logging you can pass an option to the execute call:
+
+```elixir
+query |> MyApp.MyConnection.execute(log: false)
+
+# also works with convenience methods
+MyApp.MyConnection.ping(log: false)
+```
+
 #### Ping / Status
 
 To validate a connection you can send ping requests to the server:
