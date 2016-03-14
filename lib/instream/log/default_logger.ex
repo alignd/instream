@@ -20,7 +20,7 @@ defmodule Instream.Log.DefaultLogger do
 
   def log(%WriteEntry{} = entry) do
     Logger.debug fn ->
-      "write #{ entry.points } points"
+      "[write] #{ entry.points } points"
     end
 
     entry

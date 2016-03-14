@@ -4,6 +4,7 @@ defmodule Instream.Connection.QueryRunner do
   """
 
   alias Instream.Log.QueryEntry
+  alias Instream.Log.WriteEntry
   alias Instream.Query
   alias Instream.Query.Headers
   alias Instream.Query.URL
@@ -94,8 +95,17 @@ defmodule Instream.Connection.QueryRunner do
   """
   @spec write(Query.t, Keyword.t, Keyword.t) :: any
   def write(%Query{} = query, opts, conn) do
-    query
-    |> conn[:writer].write(opts, conn)
-    |> Response.maybe_parse(opts)
+    result =
+      query
+      |> conn[:writer].write(opts, conn)
+      |> Response.maybe_parse(opts)
+
+    if false != opts[:log] do
+      conn[:module].__log__(%WriteEntry{
+        points: length(query.payload[:points])
+      })
+    end
+
+    result
   end
 end
