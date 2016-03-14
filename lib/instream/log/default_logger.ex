@@ -36,4 +36,8 @@ defmodule Instream.Log.DefaultLogger do
   defp log_entry(%QueryEntry{ type: :read, data: data }) do
     [ "[read] ", data[:query] ]
   end
+
+  defp log_entry(%QueryEntry{ type: :status, data: data }) do
+    [ "[status ", data[:host], "] ", to_string(data[:result]) ]
+  end
 end
